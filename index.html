@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>내 심혈관 위험도, 혈관나이 알아보기 — 간편판</title>
+<!-- Google tag (gtag.js) - ASCVD-Simple (G-JK2J6T6VV1) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JK2J6T6VV1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JK2J6T6VV1');
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Segoe UI',sans-serif;background:#f4f3f0;color:#1a1a18;line-height:1.6;font-size:15px;-webkit-text-size-adjust:100%}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 60px}
+.hero{margin-bottom:20px}
+.hero h1{font-size:21px;font-weight:800;color:#185fa5;margin-bottom:6px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+.hero p{font-size:13px;color:#73726c;line-height:1.6}
+.card{background:#fff;border:1px solid #e2e0db;border-radius:14px;padding:18px 18px 20px;margin-bottom:14px}
+.sec-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;color:#1a1a18;margin-bottom:4px}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#1a1a18;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.sec-desc{font-size:12px;color:#888780;margin-bottom:14px;padding-left:30px}
+.field{margin-bottom:12px;display:flex;flex-direction:column}
+.fl{display:block;font-size:12.5px;font-weight:600;color:#4a4944;margin-bottom:4px}
+.fl::before{content:"*";color:#185fa5;font-weight:800;margin-right:2px}
+.fh{font-size:11px;color:#999790;margin-bottom:4px;margin-top:-2px}
+input[type=number]{width:100%;padding:9px 11px;border:1.5px solid #d0cec8;border-radius:8px;font-size:14px;background:#fbfaf8;color:#1a1a18;outline:none;font-family:inherit;margin-top:auto}
+input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3px rgba(24,95,165,.08)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end}
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;align-items:end}
+.row4 .fl,.row3 .fl{font-size:13px;line-height:1.25}
+.row4 input[type=number],.row3 input[type=number]{padding:9px 6px;font-size:14.5px;text-align:center}
+.row4 .rg label span{padding:8px 2px;font-size:13px}
+.field-inline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+.field-inline .fl{margin-bottom:0;flex:1;min-width:150px}
+.field-inline .rg{width:150px;flex-shrink:0}
+.field-inline .rg label span{padding:7px 4px;font-size:13px}
+.subpanel{margin-top:8px;padding:10px 12px;background:#fbfaf8;border-radius:8px;border:1px solid #ece9e3}
+.rg{display:flex;gap:6px}
+.rg label{flex:1;cursor:pointer}
+.rg label span{display:block;text-align:center;padding:8px 4px;border:1.5px solid #d0cec8;border-radius:8px;font-size:13px;font-weight:600;color:#5f5e5a;user-select:none;transition:all .12s;background:#fbfaf8}
+.rg input[type=radio]{display:none}
+.rg input:checked+span{background:#185fa5;color:#fff;border-color:#185fa5}
+.hint{font-size:11px;color:#a8a6a0;margin-top:3px}
+#ascvdSubQ{display:none;margin-top:10px;padding:10px 12px;background:#fbfaf8;border-radius:8px;border:1px solid #ece9e3}
+
+/* results */
+.rescard{display:none}
+.rgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px}
+.rcell{padding:12px 6px;background:#f8f7f5;border-radius:10px;border:1px solid #e2e0db;text-align:center}
+.rcell.hl{background:#fffcee;border:2px solid #c9a02a;box-shadow:0 2px 8px rgba(201,160,42,0.15)}
+.rlabel{font-size:10px;font-weight:700;color:#888780;margin-bottom:4px;line-height:1.3}
+.rnum{font-size:24px;font-weight:800;line-height:1;color:#1a1a18}
+.rsub{font-size:10.5px;color:#a8a6a0;margin-top:4px}
+.rbw{height:5px;background:#e2e0db;border-radius:3px;overflow:hidden;margin:6px 0 0}
+.rbar{height:100%;border-radius:3px;width:0;transition:width .4s,background .4s}
+.note30{font-size:11px;color:#a07a2a;margin-top:8px;background:#fffbe f;padding:8px 10px;border-radius:8px}
+
+.badge-wrap{display:flex;align-items:center;gap:10px;padding:14px 16px;border-radius:12px;margin-bottom:10px}
+.badge-cat{font-size:16px;font-weight:800}
+.badge-sub{font-size:12px;margin-top:2px;opacity:.85}
+
+.lt{width:100%;font-size:13px;border-collapse:collapse;margin-top:4px}
+.lt th{text-align:left;font-size:10.5px;font-weight:700;color:#888780;padding:6px 4px;border-bottom:1.5px solid #e2e0db;text-transform:uppercase;letter-spacing:.03em}
+.lt td{padding:8px 4px;border-bottom:1px solid #f1efe8;color:#1a1a18}
+.lt tr:last-child td{border-bottom:none}
+.met{color:#3b6d11;font-weight:700}
+.unmet{color:#a32d2d;font-weight:700}
+
+.rb{padding:12px 14px;border-radius:10px;border-left:4px solid #d0cec8;background:#f8f7f5;margin-bottom:10px}
+.rb.hi{border-left-color:#e24b4a;background:#fcebeb}
+.rb.mo{border-left-color:#ef9f27;background:#fdf3e0}
+.rb.lo{border-left-color:#639922;background:#eef5e2}
+.rb-title{font-size:14.5px;font-weight:800;color:#1a1a18;margin-bottom:3px}
+.rb-body{font-size:12.5px;color:#5f5e5a;line-height:1.6}
+
+.nb{padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.65;margin-top:10px}
+.nb.info{background:#e6f1fb;color:#185fa5}
+.nb.warn{background:#faeeda;color:#854f0b}
+
+.checklist{margin-top:4px}
+.checklist li{list-style:none;padding:5px 0;font-size:13px;color:#3d3c39;display:flex;gap:8px}
+.checklist li::before{content:"✓";color:#185fa5;font-weight:800;flex-shrink:0}
+
+.btn{display:block;width:100%;padding:13px;background:#1a1a18;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
+.btn:hover{background:#2d2d2a}
+.disclaimer{font-size:12px;color:#a8a6a0;margin-top:18px;line-height:1.7;text-align:left;padding:0 10px}
+
+/* print button (floating, near right edge) */
+.print-fab{position:fixed;top:14px;right:max(16px,calc(50% - 320px + 16px));left:auto;z-index:100;display:none;align-items:center;gap:6px;background:#1a1a18;color:#fff;border:none;border-radius:24px;padding:10px 16px;font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2);font-family:inherit}
+.print-fab:hover{background:#2d2d2a}
+.print-fab svg{width:15px;height:15px;flex-shrink:0}
+
+/* print-only summary (built by JS, shown only when printing) */
+.print-only{display:none}
+@media print{
+  .print-fab{display:none!important}
+  body *{visibility:hidden}
+  #printSummary,#printSummary *{visibility:visible}
+  #printSummary{display:block!important;position:absolute;left:0;top:0;width:100%;padding:0;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#111}
+  @page{size:A4;margin:12mm 14mm}
+  .p-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a18;padding-bottom:6px;margin-bottom:10px}
+  .p-header h2{font-size:17px;font-weight:800;margin:0}
+  .p-date{font-size:10.5px;color:#555}
+  .p-section{margin-bottom:9px;page-break-inside:avoid}
+  .p-section h3{font-size:12.5px;font-weight:800;background:#f0efec;padding:4px 8px;margin-bottom:5px;border-left:3px solid #185fa5}
+  .p-table{width:100%;border-collapse:collapse;font-size:10.5px}
+  .p-table td{padding:3px 6px;border:1px solid #ddd}
+  .p-table td.k{background:#f7f6f4;font-weight:700;width:16%;color:#444}
+  .p-riskgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+  .p-rcell{border:1px solid #ddd;border-radius:6px;padding:6px 4px;text-align:center}
+  .p-rcell .lbl{font-size:9.5px;color:#666;font-weight:700}
+  .p-rcell .num{font-size:17px;font-weight:800;margin-top:2px}
+  .p-sub{font-size:11px;color:#444;text-align:left;margin-bottom:4px}
+  .p-vage-emph{font-size:13px;font-weight:800;color:#185fa5}
+  .p-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:800;margin-bottom:3px}
+  .p-actions{margin:0;padding-left:16px;font-size:10.5px;line-height:1.55}
+  .p-actions li{margin-bottom:2px}
+  .p-footer{margin-top:8px;padding-top:6px;border-top:1px solid #ccc;font-size:8.5px;color:#777;line-height:1.5;text-align:left}
+}
+</style>
+</head>
+<body>
+<button class="print-fab" id="printBtn" onclick="printReport()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+  프린트/PDF저장
+</button>
+<div id="printSummary" class="print-only"></div>
+<div class="wrap">
+
+<div class="hero">
+  <h1><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"></path></svg>내 심혈관 위험도, 혈관나이 알아보기</h1>
+  <p>미국심장학회/미국심장협회(ACC/AHA) 2023 PREVENT 공식과 2026 콜레스테롤 치료 가이드라인을 바탕으로, 향후 10년 내 심장병·뇌졸중이 생길 가능성을 계산해 드립니다. 결과는 참고용이며, 실제 치료 결정은 반드시 담당 의사와 상의하세요. (* 고지혈증 약제 복용 중이면, 약물 복용 이전 지질수치를 넣어야 합니다.)</p>
+</div>
+
+<!-- SECTION 1: 입력 -->
+<div class="card">
+  <div class="sec-title"><span class="sec-num">1</span>기본 정보 &amp; 검사 결과 입력</div>
+  <div class="sec-desc">건강검진 결과지를 준비하시면 더 정확합니다</div>
+
+  <div class="row4">
+    <div class="field">
+      <label class="fl">나이(세)</label>
+      <input type="number" id="age" placeholder="55" min="20" max="90">
+    </div>
+    <div class="field">
+      <label class="fl">성별</label>
+      <div class="rg">
+        <label><input type="radio" name="sex" value="F" checked><span>여성</span></label>
+        <label><input type="radio" name="sex" value="M"><span>남성</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="fl">키(cm)</label>
+      <input type="number" id="height" placeholder="160">
+    </div>
+    <div class="field">
+      <label class="fl">몸무게(kg)</label>
+      <input type="number" id="weight" placeholder="60">
+    </div>
+  </div>
+
+  <div class="row4">
+    <div class="field">
+      <label class="fl">수축기 혈압(mmHg)</label>
+      <input type="number" id="sbp" placeholder="130">
+    </div>
+    <div class="field">
+      <label class="fl">혈압약 복용</label>
+      <div class="rg">
+        <label><input type="radio" name="bpTx" value="0" checked><span>아니오</span></label>
+        <label><input type="radio" name="bpTx" value="1"><span>예</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="fl">흡연</label>
+      <div class="rg">
+        <label><input type="radio" name="smoker" value="0" checked><span>아니오</span></label>
+        <label><input type="radio" name="smoker" value="1"><span>예</span></label>
+      </div>
+    </div>
+    <div class="field">
+      <label class="fl">당뇨병</label>
+      <div class="rg">
+        <label><input type="radio" name="dm" value="0" checked><span>아니오</span></label>
+        <label><input type="radio" name="dm" value="1"><span>예</span></label>
+      </div>
+    </div>
+  </div>
+  <div class="hint" style="margin:-6px 0 10px">수축기 혈압은 최근 병원·검진 측정값 기준 (mmHg)</div>
+
+  <div class="divider" style="height:1px;background:#e2e0db;margin:14px 0"></div>
+
+  <div class="row3">
+    <div class="field">
+      <label class="fl">총콜레스테롤(mg/dL)</label>
+      <input type="number" id="tc" placeholder="200">
+    </div>
+    <div class="field">
+      <label class="fl">고밀도콜레스테롤(mg/dL)</label>
+      <input type="number" id="hdl" placeholder="55">
+    </div>
+    <div class="field">
+      <label class="fl">저밀도콜레스테롤(mg/dL)</label>
+      <input type="number" id="ldl" placeholder="120">
+    </div>
+  </div>
+
+  <div class="divider" style="height:1px;background:#e2e0db;margin:14px 0"></div>
+  <div style="font-size:12.5px;font-weight:700;color:#4a4944;margin-bottom:2px">추가 정보 (입력하면 더 정확해집니다)</div>
+  <div class="hint" style="margin-bottom:10px">신장기능(eGFR)·당화혈색소·요알부민은 PREVENT의 확장 모델(Full model)에 쓰여 위험도 정확도를 높입니다. 모르면 비워두어도 계산됩니다.</div>
+  <div class="row3 info-row">
+    <div class="field">
+      <label class="fl">사구체 여과율(mL/min/1.73㎡)</label>
+      <input type="number" id="egfr" placeholder="모르면 공란">
+    </div>
+    <div class="field">
+      <label class="fl">당화혈색소(%)</label>
+      <input type="number" step="0.1" id="hba1c" placeholder="모르면 공란">
+    </div>
+    <div class="field">
+      <label class="fl">소변 알부민(mg/g)</label>
+      <input type="number" id="uacr" placeholder="모르면 공란">
+    </div>
+  </div>
+
+  <button class="btn" onclick="calcAll()">내 위험도 계산하기</button>
+</div>
+
+<!-- SECTION 2: baseline risk -->
+<div class="card rescard" id="sec2">
+  <div class="sec-title"><span class="sec-num">2</span>치료 전(현재 기준) 위험도</div>
+  <div class="sec-desc">앞으로 10년 동안 심장병·뇌졸중이 생길 확률</div>
+  <div id="secondaryNotice" style="display:none" class="nb warn">이미 심장병·뇌졸중 병력이 있으신 경우, PREVENT 위험도 계산식은 처음 발생을 예측하는 용도라 적용되지 않습니다. 대신 재발 방지를 위한 2차 예방 치료가 필요합니다 (아래 3·5번 참고).</div>
+  <div id="statinBackCalcNotice" style="display:none" class="nb info"></div>
+  <div id="riskNumbers">
+    <div class="rgrid">
+      <div class="rcell hl" id="ascvdCell">
+        <div class="rlabel">동맥경화성<br>심혈관질환</div>
+        <div class="rnum" id="ascvdNum">—</div>
+        <div class="rbw"><div class="rbar" id="ascvdBar"></div></div>
+        <div class="rsub">10년 내 (%)</div>
+      </div>
+      <div class="rcell" id="hfCell">
+        <div class="rlabel">심부전</div>
+        <div class="rnum" id="hfNum">—</div>
+        <div class="rbw"><div class="rbar" id="hfBar"></div></div>
+        <div class="rsub">10년 내 (%)</div>
+      </div>
+      <div class="rcell" id="totCell">
+        <div class="rlabel">전체<br>심혈관질환</div>
+        <div class="rnum" id="totNum">—</div>
+        <div class="rbw"><div class="rbar" id="totBar"></div></div>
+        <div class="rsub">10년 내 (%)</div>
+      </div>
+    </div>
+    <div class="rsub" style="text-align:center;margin-top:2px" id="risk30sub">30년 누적 위험도 (참고): 동맥경화성 —% · 전체 —%</div>
+    <div id="note30yr" style="display:none" class="note30">💡 10년 위험도는 낮지만, 30년 누적 위험도가 높게 나타납니다. 아직 약물치료가 필수는 아니지만, 젊을 때부터 생활습관 관리를 시작하면 장기적으로 큰 도움이 됩니다.</div>
+  </div>
+  <div id="ageWarn" style="display:none" class="nb warn">이 계산식은 만 30~79세, 심장병 병력이 없는 분들을 대상으로 검증되었습니다. 입력하신 나이 기준으로는 참고용으로만 확인하세요.</div>
+
+  <div id="vascAgeBox" style="margin-top:12px;padding:14px 16px;border-radius:12px;background:#f8f7f5;border:1px solid #e2e0db;display:flex;align-items:center;justify-content:space-between;gap:10px">
+    <div>
+      <div style="font-size:12px;font-weight:700;color:#888780">나의 혈관 나이 (참고용)</div>
+      <div style="font-size:11px;color:#a8a6a0;margin-top:2px" id="vascAgeDesc">실제 나이와 같은 위험도를 가지려면 혈관 나이가 몇 살이어야 하는지 추정한 값</div>
+    </div>
+    <div style="text-align:right;flex-shrink:0">
+      <div style="font-size:26px;font-weight:800;color:#1a1a18" id="vascAgeNum">—세</div>
+      <div style="font-size:11px;font-weight:700" id="vascAgeDiff">—</div>
+    </div>
+  </div>
+  <div id="modelNote" style="display:none" class="nb info">eGFR·당화혈색소·요알부민 정보가 반영된 PREVENT 확장 모델(Full model)로 계산되었습니다.</div>
+</div>
+
+<!-- SECTION 3: risk classification -->
+<div class="card rescard" id="sec3">
+  <div class="sec-title"><span class="sec-num">3</span>PREVENT 위험도 분류</div>
+  <div class="sec-desc">ACC/AHA 기준에 따른 나의 위험 단계</div>
+  <div class="badge-wrap" id="catBadge">
+    <div>
+      <div class="badge-cat" id="catText">—</div>
+      <div class="badge-sub" id="catSub">—</div>
+    </div>
+  </div>
+  <div style="font-size:11.5px;color:#888780;line-height:1.7">
+    저위험 &lt;3% · 경계위험 3~5% · 중간위험 5~10% · 고위험 ≥10%<br>(심장병·뇌졸중 병력이 있으면 2차 예방으로 별도 분류)
+  </div>
+</div>
+
+<!-- SECTION 4: next steps -->
+<div class="card rescard" id="sec5">
+  <div class="sec-title"><span class="sec-num">4</span>다음으로 해야 할 일</div>
+  <div class="sec-desc">위험도 단계에 따른 일반적인 권장 사항 (개인마다 다를 수 있음)</div>
+  <div id="recBox"></div>
+  <ul class="checklist" id="actionList"></ul>
+</div>
+
+<div class="disclaimer">
+  본 도구는 ACC/AHA PREVENT(2023) 및 2026 ACC/AHA/Multisociety 지질 가이드라인의 공개된 계산식을 바탕으로 제작한 교육용 참고 자료이며, 공식 인증 도구가 아닙니다. 실제 진단·처방·치료 결정은 반드시 의료진과 상의하십시오.<br>제작 : 경북대학교병원 내분비대사내과 김정국 (<a href="mailto:jugkim@knu.ac.kr" style="color:inherit;text-decoration:underline">jugkim@knu.ac.kr</a>)
+</div>
+
+</div>
+
+<script>
+/* ── PREVENT 2023 coefficients (10y/30y, male/female, 3 outcomes) ── */
+/* base: 나이·성별·혈압·지질·흡연·당뇨·BMI·eGFR 만 사용 */
+/* full: base + 사회경제 결핍지수(SDI, 결측 처리)·UACR·HbA1c 반영 — 더 정밀 */
+const COEF = {
+ base:{
+  y10:{
+   female:{
+    total_cvd:[0.7939329,0,0.0305239,-0.1606857,-0.2394003,0.3600781,0.8667604,0.5360739,0,0,0.6045917,0.0433769,0.3151672,-0.1477655,-0.0663612,0.1197879,-0.0819715,0.0306769,-0.0946348,-0.27057,-0.078715,0,-0.1637806,0,0,0,0,0,0,0,0,-3.307728],
+    ascvd:[0.719883,0,0.1176967,-0.151185,-0.0835358,0.3592852,0.8348585,0.4831078,0,0,0.4864619,0.0397779,0.2265309,-0.0592374,-0.0395762,0.0844423,-0.0567839,0.0325692,-0.1035985,-0.2417542,-0.0791142,0,-0.1671492,0,0,0,0,0,0,0,0,-3.819975],
+    heart_failure:[0.8998235,0,0,0,-0.4559771,0.3576505,1.038346,0.583916,-0.0072294,0.2997706,0.7451638,0.0557087,0.3534442,0,-0.0981511,0,0,0,-0.0946663,-0.3581041,-0.1159453,-0.003878,-0.1884289,0,0,0,0,0,0,0,0,-4.310409]
+   },
+   male:{
+    total_cvd:[0.7688528,0,0.0736174,-0.0954431,-0.4347345,0.3362658,0.7692857,0.4386871,0,0,0.5378979,0.0164827,0.288879,-0.1337349,-0.0475924,0.150273,-0.0517874,0.0191169,-0.1049477,-0.2251948,-0.0895067,0,-0.1543702,0,0,0,0,0,0,0,0,-3.031168],
+    ascvd:[0.7099847,0,0.1658663,-0.1144285,-0.2837212,0.3239977,0.7189597,0.3956973,0,0,0.3690075,0.0203619,0.2036522,-0.0865581,-0.0322916,0.114563,-0.0300005,0.0232747,-0.0927024,-0.2018525,-0.0970527,0,-0.1217081,0,0,0,0,0,0,0,0,-3.500655],
+    heart_failure:[0.8972642,0,0,0,-0.6811466,0.3634461,0.923776,0.5023736,-0.0485841,0.3726929,0.6926917,0.0251827,0.2980922,0,-0.0497731,0,0,0,-0.1289201,-0.3040924,-0.1401688,0.0068126,-0.1797778,0,0,0,0,0,0,0,0,-3.946391]
+   }
+  },
+  y30:{
+   female:{
+    total_cvd:[0.5503079,-0.0928369,0.0409794,-0.1663306,-0.1628654,0.3299505,0.6793894,0.3196112,0,0,0.1857101,0.0553528,0.2894,-0.075688,-0.056367,0.1071019,-0.0751438,0.0301786,-0.0998776,-0.3206166,-0.1607862,0,-0.1450788,0,0,0,0,0,0,0,0,-1.318827],
+    ascvd:[0.4669202,-0.0893118,0.1256901,-0.1542255,-0.0018093,0.322949,0.6296707,0.268292,0,0,0.100106,0.0499663,0.1875292,0.0152476,-0.0276123,0.0736147,-0.0521962,0.0316918,-0.1046101,-0.2727793,-0.1530907,0,-0.1299149,0,0,0,0,0,0,0,0,-1.974074],
+    heart_failure:[0.6254374,-0.0983038,0,0,-0.3919241,0.3142295,0.8330787,0.3438651,0.0594874,0.2525536,0.2981642,0.0667159,0.333921,0,-0.0893177,0,0,0,-0.0974299,-0.404855,-0.1982991,-0.0035619,-0.1564215,0,0,0,0,0,0,0,0,-2.205379]
+   },
+   male:{
+    total_cvd:[0.4627309,-0.0984281,0.0836088,-0.1029824,-0.2140352,0.2904325,0.5331276,0.2141914,0,0,0.1155556,0.0603775,0.232714,-0.0272112,-0.0384488,0.134192,-0.0511759,0.0165865,-0.1101437,-0.2585943,-0.1566406,0,-0.1166776,0,0,0,0,0,0,0,0,-1.148204],
+    ascvd:[0.3994099,-0.0937484,0.1744643,-0.120203,-0.0665117,0.2753037,0.4790257,0.1782635,0,0,-0.0218789,0.0602553,0.1421182,0.0135996,-0.0218265,0.1013148,-0.0312619,0.020673,-0.0920935,-0.2159947,-0.1548811,0,-0.0712547,0,0,0,0,0,0,0,0,-1.736444],
+    heart_failure:[0.5681541,-0.1048388,0,0,-0.4761564,0.30324,0.6840338,0.2656273,0.0833107,0.26999,0.2541805,0.0638923,0.2583631,0,-0.0391938,0,0,0,-0.1269124,-0.3273572,-0.2043019,-0.0182831,-0.1342618,0,0,0,0,0,0,0,0,-1.95751]
+   }
+  }
+ },
+ full:{
+  y10:{
+   female:{
+    total_cvd:[0.7716794,0,0.0062109,-0.1547756,-0.1933123,0.3071217,0.496753,0.466605,0,0,0.4780697,0.0529077,0.3034892,-0.1556524,-0.0667026,0.1061825,-0.0742271,0.0288245,-0.0875188,-0.2267102,-0.0676125,0,-0.1493231,0.1361989,0.2261596,0.1804508,0.1645922,0.0198413,0.1298513,0.1412555,-0.0031658,-3.860385],
+    ascvd:[0.7023067,0,0.0898765,-0.1407316,-0.0256648,0.314511,0.4799217,0.4062049,0,0,0.3847744,0.0495174,0.2133861,-0.0678552,-0.0451416,0.0788187,-0.0535985,0.0291762,-0.0961839,-0.2001466,-0.0586472,0,-0.1537791,0.1413965,0.228136,0.1588908,0.1371824,0.0061613,0.123192,0.1410572,0.005866,-4.291503],
+    heart_failure:[0.884209,0,0,0,-0.421474,0.3002919,0.6170359,0.5380269,-0.0191335,0.2764302,0.5975847,0.0654197,0.3313614,0,-0.1002304,0,0,0,-0.0845363,-0.2989062,-0.1111354,0.0008104,-0.1666635,0.1213034,0.2314147,0.1819138,0.1948135,0.0395368,0.176668,0.1614911,-0.0010583,-4.896524]
+   },
+   male:{
+    total_cvd:[0.7847578,0,0.0534485,-0.0911282,-0.4921973,0.2972415,0.4527054,0.3726641,0,0,0.3886854,0.0081661,0.2508052,-0.1538484,-0.0474695,0.1415382,-0.0436455,0.0199549,-0.1022686,-0.1762507,-0.0715873,0,-0.1428668,0.0802431,0.275073,0.144759,0.1772853,0.1095674,0.1165698,0.1048297,-0.0230072,-3.631387],
+    ascvd:[0.7128741,0,0.1465201,-0.1125794,-0.3387216,0.2980252,0.399583,0.3379111,0,0,0.2582604,0.0147769,0.1686621,-0.1073619,-0.0381038,0.1034169,-0.0228755,0.0267453,-0.0897449,-0.1497464,-0.077206,0,-0.1198368,0.0651121,0.2676683,0.1388492,0.1375837,0.0652944,0.101282,0.1092726,-0.0112852,-3.969788],
+    heart_failure:[0.9095703,0,0,0,-0.6765184,0.3111651,0.5535052,0.4326811,-0.0854286,0.3551736,0.5102245,0.015472,0.2570964,0,-0.0591177,0,0,0,-0.1219056,-0.2437577,-0.105363,0.0037907,-0.1660207,0.1106372,0.3371204,0.1694628,0.2164607,0.1702805,0.148297,0.1234088,-0.0234637,-4.663513]
+   }
+  },
+  y30:{
+   female:{
+    total_cvd:[0.5073749,-0.0981751,0.0162303,-0.1617147,-0.1111241,0.282946,0.4004069,0.2918701,0,0,0.1017102,0.0622643,0.2872416,-0.0768135,-0.0557282,0.0917585,-0.0679131,0.029076,-0.0907755,-0.2702118,-0.1373216,0,-0.1255864,0.1067741,0.1853138,0.1567115,0.1028065,-0.0006181,0.0925285,0.0975598,0.0101713,-1.748475],
+    ascvd:[0.4386739,-0.0921956,0.0977728,-0.1453525,0.0590925,0.2862862,0.3669136,0.2354695,0,0,0.0354338,0.0573093,0.1840085,0.0117504,-0.0331945,0.0664311,-0.0492826,0.0288888,-0.0964709,-0.2279648,-0.120405,0,-0.1157635,0.1107632,0.1840367,0.1308962,0.0810739,-0.0147785,0.0794709,0.1002615,0.017301,-2.314066],
+    heart_failure:[0.5927507,-0.1028754,0,0,-0.3593781,0.2628556,0.5113472,0.347344,0.0564656,0.2363857,0.1971295,0.0735227,0.3219386,0,-0.0880321,0,0,0,-0.0863132,-0.3425359,-0.181405,0.0031285,-0.1356989,0.0847634,0.18397,0.1485802,0.1273306,0.0167008,0.1378342,0.1138832,0.0138979,-2.642208]
+   },
+   male:{
+    total_cvd:[0.4427595,-0.1064108,0.0629381,-0.1015427,-0.2542326,0.2549679,0.333835,0.1873833,0,0,0.0246102,0.0552014,0.1979729,-0.0407714,-0.0365522,0.1232822,-0.0441334,0.0177865,-0.1046657,-0.2116113,-0.1277905,0,-0.0955922,0.0256704,0.1887637,0.089241,0.0894596,0.0710124,0.0676202,0.063409,0.0038783,-1.504558],
+    ascvd:[0.3743566,-0.0995499,0.1544808,-0.1215297,-0.1083968,0.2555179,0.2696998,0.1628432,0,0,-0.077507,0.0583407,0.1120322,-0.0025063,-0.0256116,0.0886745,-0.0254507,0.0244639,-0.0869146,-0.165745,-0.1244714,0,-0.0624552,0.015675,0.1864231,0.0845697,0.0560171,0.0252244,0.0501422,0.0722905,0.0114945,-1.985368],
+    heart_failure:[0.5478829,-0.1111928,0,0,-0.4547346,0.2527602,0.4385384,0.2397952,0.0640931,0.2643081,0.1354588,0.0570689,0.220666,0,-0.0436769,0,0,0,-0.1168376,-0.2730055,-0.1573691,-0.0174998,-0.1128676,0.057746,0.2446441,0.1076782,0.1233486,0.1274796,0.0985062,0.0804844,0.0022806,-2.425439]
+   }
+  }
+ }
+};
+
+function odds(z){return Math.exp(z)/(1+Math.exp(z));}
+function dot(a,b){let s=0;for(let i=0;i<a.length;i++)s+=a[i]*b[i];return s;}
+function toMmol(x){return x/38.67;}
+function clamp(v){return Math.min(100,Math.max(0,v));}
+
+function featureVector(age,sbp,bpTx,tcMgdl,hdlMgdl,smoker,dm,bmi,statin,egfrIn,hba1c,uacr,model){
+  const ageC=(age-55)/10, age2=ageC*ageC;
+  const nonHdl=toMmol(tcMgdl-hdlMgdl)-3.5;
+  const hdl=(toMmol(hdlMgdl)-1.3)/0.3;
+  const sbpLt110=(Math.min(sbp,110)-110)/20;
+  const sbpGte110=(Math.max(sbp,110)-130)/20;
+  const bmiLt30=(Math.min(bmi,30)-25)/5;
+  const bmiGte30=(Math.max(bmi,30)-30)/5;
+  const egfr = (egfrIn!=null && egfrIn>0) ? egfrIn : 90; // 값 없으면 정상(90) 가정
+  const egfrLt60=(Math.min(egfr,60)-60)/-15;
+  const egfrGte60=(Math.max(egfr,60)-90)/-15;
+
+  let sdi4to6=0, sdi7to10=0, missingSdi=0, lnUacr=0, missingUacr=0, hba1cDm=0, hba1cNoDm=0, missingHba1c=0;
+  if(model==='full'){
+    missingSdi=1; // 사회경제 결핍지수는 이 도구에서 수집하지 않음 → 결측 처리
+    if(uacr!=null && uacr>0){ lnUacr=Math.log(uacr); } else { missingUacr=1; }
+    if(hba1c!=null && hba1c>0){
+      if(dm) hba1cDm = hba1c-5.3; else hba1cNoDm = hba1c-5.3;
+    } else { missingHba1c=1; }
+  }
+
+  return [ageC,age2,nonHdl,hdl,sbpLt110,sbpGte110,dm,smoker,bmiLt30,bmiGte30,egfrLt60,egfrGte60,bpTx,statin,
+    bpTx*sbpGte110, statin*nonHdl, ageC*nonHdl, ageC*hdl, ageC*sbpGte110, ageC*dm, ageC*smoker, ageC*bmiGte30, ageC*egfrLt60,
+    sdi4to6, sdi7to10, missingSdi, lnUacr, missingUacr, hba1cDm, hba1cNoDm, missingHba1c, 1];
+}
+
+function chooseModel(hba1c,uacr){
+  return (hba1c!=null || uacr!=null) ? 'full' : 'base';
+}
+
+function calcRisks(age,sexM,sbp,bpTx,tc,hdlv,smoker,dm,bmi,statin,egfr,hba1c,uacr){
+  const model = chooseModel(hba1c,uacr);
+  const x=featureVector(age,sbp,bpTx,tc,hdlv,smoker,dm,bmi,statin,egfr,hba1c,uacr,model);
+  const sx=sexM?'male':'female';
+  const C=COEF[model];
+  return {
+    model,
+    y10:{ total_cvd:clamp(odds(dot(C.y10[sx].total_cvd,x))*100), ascvd:clamp(odds(dot(C.y10[sx].ascvd,x))*100), heart_failure:clamp(odds(dot(C.y10[sx].heart_failure,x))*100) },
+    y30:{ total_cvd:clamp(odds(dot(C.y30[sx].total_cvd,x))*100), ascvd:clamp(odds(dot(C.y30[sx].ascvd,x))*100) }
+  };
+}
+
+/* ── 혈관 나이(vascular age): 위험인자가 모두 정상 범위인 사람과 같은 성별에서,
+   그 "정상 위험인자" 프로필이 나와 동일한 10년 ASCVD 위험도가 되는 나이를 역산 ── */
+function vascularAge(sexM, actualAscvdRisk, model){
+  const sx=sexM?'male':'female';
+  const C=COEF[model].y10[sx].ascvd;
+  let lo=20, hi=95;
+  for(let i=0;i<50;i++){
+    const mid=(lo+hi)/2;
+    // 정상 기준 프로필: 비흡연, 비당뇨, 혈압약 없음, SBP 110, TC 170/HDL 50, BMI 25, eGFR 90, 검사결과 없음
+    const x=featureVector(mid,110,0,170,50,0,0,25,0,90,null,null,model);
+    const r=clamp(odds(dot(C,x))*100);
+    if(r<actualAscvdRisk) lo=mid; else hi=mid;
+  }
+  return Math.round((lo+hi)/2);
+}
+
+/* ── 스타틴 복용 중인 경우, 강도별 평균 LDL 감소율로 "치료 전" 지질 역산 ── */
+/* ACC/AHA 스타틴 강도 분류 기준 평균 LDL 감소율 근사치 */
+const STATIN_REDUCTION = { low:0.25, moderate:0.38, high:0.50 };
+function backCalcPretreatment(tcOnTx, hdlOnTx, ldlOnTx, intensity){
+  const frac = STATIN_REDUCTION[intensity] || STATIN_REDUCTION.moderate;
+  const nonHdlOnTx = tcOnTx - hdlOnTx;
+  const preNonHdl = nonHdlOnTx/(1-frac);
+  const preLdl = ldlOnTx/(1-frac);
+  const preTc = preNonHdl + hdlOnTx; // 스타틴의 HDL 영향은 미미하다고 가정, HDL은 그대로 사용
+  return { preTc, preLdl, preNonHdl };
+}
+
+function riskLevelLabel(risk){
+  if(risk<3) return '저위험';
+  if(risk<5) return '경계위험';
+  if(risk<10) return '중간위험';
+  return '고위험';
+}
+function getCategory(ascvdHx,veryHigh,age,risk,ldl,dm,smoker,bpTx,egfr){
+  if(ascvdHx){
+    if(veryHigh) return {cat:'2차 예방 — 초고위험', sub:'심장병·뇌졸중 병력 + 최근 재발/다혈관 질환', color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:55, level:'hi'};
+    return {cat:'2차 예방 — 고위험', sub:'심장병·뇌졸중 병력 있음', color:'#c2542a', bg:'#fdece2', intensity:'고강도 스타틴', target:70, level:'hi'};
+  }
+  const rlv = riskLevelLabel(risk);
+  if(ldl>=190){
+    const strong = dm||risk>=10||smoker||bpTx;
+    return {cat:'중증 고콜레스테롤혈증 (LDL≥190)', sub:rlv+'에 속하나, LDL≥190 mg/dL(중증 고콜레스테롤혈증, 가족성 고콜레스테롤혈증 감별 필요)이므로, 위험도와 상관 없이 스타틴 사용이 필요함', color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target: strong?70:100, level:'hi'};
+  }
+  if(age<30){
+    if(ldl>=160) return {cat:'30세 미만 — 위험 인자 동반', sub:'LDL ≥160', color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴 고려', target:100, level:'mo'};
+    return {cat:'30세 미만', sub:'생활습관 관리 우선', color:'#639922', bg:'#eef5e2', intensity:'생활습관 교정', target:130, level:'lo'};
+  }
+  if(age>79) return {cat:'79세 초과', sub:'개별화된 판단 필요', color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 (개별화)', target:100, level:'mo'};
+  // 말기신질환(CKD 5기·투석 수준, eGFR<15) — 2026 가이드라인: 투석 환자에서 스타틴을 '새로 시작'하는 것은 이득이 불확실함(4D·AURORA 연구 근거).
+  // 이 근거 연구들은 당뇨병 환자를 포함해 수행되었으므로, 당뇨병이 있어도 이 단계에서는 "위험도 무관 스타틴 필요" 규칙보다 이 설명이 우선함.
+  if(egfr!=null && egfr>0 && egfr<15){
+    const dmPart = dm ? ' 당뇨병이 동반되어 있어도(당뇨병 자체는 위험도 무관 스타틴 적응증이지만), 이 정도의 신기능 저하에서는 스타틴을 새로 시작하는 것의 심혈관 이득이 명확하지 않다는 근거(4D 연구 등, 당뇨병·투석 환자 대상)가 우선 적용됨.' : '';
+    return {cat:'말기신질환(CKD 5기·투석 수준)', sub:rlv+'에 속하나, eGFR<15(말기신질환) 상태에서는 스타틴을 새로 시작하는 것의 심혈관 이득이 명확하지 않음(2026 가이드라인).'+dmPart+' 이미 스타틴을 복용 중이라면 유지는 합리적일 수 있음 — 신장내과와 개별 상담 필요', color:'#ef9f27', bg:'#fdf3e0', intensity:'개별 상담 필요 (신규 스타틴 시작 이득 불확실)', target:null, level:'mo'};
+  }
+  // 만성신질환(CKD 3~4기, eGFR 15~59) — 2026 ACC/AHA/Multisociety 가이드라인: 40~75세는 LDL·계산위험도와 무관하게 스타틴 권고(COR 1, SHARP 근거)
+  const hasCkd = (egfr!=null && egfr>=15 && egfr<60 && age>=40 && age<=75);
+  if(hasCkd){
+    const condLabel = dm ? '당뇨병 및 만성신질환(CKD 3~4기)' : '만성신질환(CKD 3~4기)';
+    const catLabel = dm ? '당뇨병 + 만성신질환(CKD 3~4기)' : '만성신질환(CKD 3~4기)';
+    const sub = rlv+'에 속하나, '+condLabel+' 동반 상태이므로, 위험도와 상관 없이 스타틴 사용이 필요함';
+    if(dm || risk>=10){
+      return {cat:catLabel, sub, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:70, level:'hi'};
+    }
+    return {cat:catLabel, sub, color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴 (± 에제티미브)', target:100, level:'mo'};
+  }
+  if(dm){
+    const sub = rlv+'에 속하나, 당뇨병 동반 상태이므로, 위험도와 상관 없이 스타틴 사용이 필요함';
+    if(risk>=10) return {cat:'당뇨병', sub, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:70, level:'hi'};
+    return {cat:'당뇨병', sub, color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴', target:100, level:'mo'};
+  }
+  if(risk<3) return {cat:'저위험 (<3%)', sub:'PREVENT-ASCVD 10년 위험도', color:'#639922', bg:'#eef5e2', intensity:'생활습관 교정', target:130, level:'lo'};
+  if(risk<5) return {cat:'경계위험 (3~5%)', sub:'PREVENT-ASCVD 10년 위험도', color:'#639922', bg:'#eef5e2', intensity:'생활습관 교정, 필요시 스타틴 상담', target:130, level:'lo'};
+  if(risk<10) return {cat:'중간위험 (5~10%)', sub:'PREVENT-ASCVD 10년 위험도', color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴 고려', target:100, level:'mo'};
+  return {cat:'고위험 (≥10%)', sub:'PREVENT-ASCVD 10년 위험도', color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴 권고', target:70, level:'hi'};
+}
+
+function riskColor(v){
+  if(!Number.isFinite(v)) return '#d0cec8';
+  return v<3?'#639922':v<5?'#97c459':v<10?'#ef9f27':'#e24b4a';
+}
+function printRiskStyle(v){
+  if(!Number.isFinite(v)) return {bg:'#f8f7f5',border:'#ddd',text:'#1a1a18'};
+  if(v<3) return {bg:'#eef5e2',border:'#639922',text:'#3b6d11'};
+  if(v<5) return {bg:'#f3f8ea',border:'#97c459',text:'#5a7d2e'};
+  if(v<10) return {bg:'#fdf3e0',border:'#ef9f27',text:'#a3660b'};
+  return {bg:'#fcebeb',border:'#e24b4a',text:'#a32d2d'};
+}
+function barWidthPct(v){
+  if(!Number.isFinite(v)) return 0;
+  return Math.min(100, v*4.2);
+}
+function calcAll(){
+  const age=parseFloat(document.getElementById('age').value);
+  const height=parseFloat(document.getElementById('height').value);
+  const weight=parseFloat(document.getElementById('weight').value);
+  const sbp=parseFloat(document.getElementById('sbp').value);
+  const tc=parseFloat(document.getElementById('tc').value);
+  const hdlv=parseFloat(document.getElementById('hdl').value);
+  let ldl=parseFloat(document.getElementById('ldl').value);
+  const sexM = document.querySelector('input[name=sex]:checked').value==='M';
+  const bpTx = document.querySelector('input[name=bpTx]:checked').value==='1'?1:0;
+  const smoker = document.querySelector('input[name=smoker]:checked').value==='1'?1:0;
+  const dm = document.querySelector('input[name=dm]:checked').value==='1'?1:0;
+  const statin = 0; // 질문 제거 — 항상 스타틴 미복용으로 간주
+  const ascvdHx = false; // 질문 제거 — 항상 1차 예방(심장병·뇌졸중 병력 없음)으로 간주
+  const veryHigh = false;
+
+  const egfrRaw = parseFloat(document.getElementById('egfr').value);
+  const hba1cRaw = parseFloat(document.getElementById('hba1c').value);
+  const uacrRaw = parseFloat(document.getElementById('uacr').value);
+  const egfr = (!isNaN(egfrRaw) && egfrRaw>0) ? egfrRaw : null;
+  const hba1c = (!isNaN(hba1cRaw) && hba1cRaw>0) ? hba1cRaw : null;
+  const uacr = (!isNaN(uacrRaw) && uacrRaw>0) ? uacrRaw : null;
+
+  if(!age||!height||!weight||!sbp||!tc||!hdlv){
+    alert('나이, 키, 몸무게, 수축기 혈압, 총콜레스테롤, HDL은 반드시 입력해 주세요.');
+    return;
+  }
+  if(isNaN(ldl)) ldl = Math.max(0, tc - hdlv - 30); // TG 모를 때 대략치 (TG≈150 가정)
+
+  const bmi = weight/((height/100)*(height/100));
+  const nonHdl = tc - hdlv;
+
+  // 스타틴 복용 중이면, 현재 수치는 약 복용 후 수치이므로 '치료 전(위험도 산정용)' 지질을 역산
+  let riskTc = tc, riskLdl = ldl, riskStatin = statin, backCalc = null;
+  if(statin===1){
+    const intensity = document.getElementById('statinIntensity').value || 'moderate';
+    backCalc = backCalcPretreatment(tc, hdlv, ldl, intensity);
+    riskTc = backCalc.preTc;
+    riskLdl = backCalc.preLdl;
+    riskStatin = 0; // 위험도·목표 산정은 '치료 전' 기준이므로 statin 미복용으로 계산
+  }
+
+  const r = calcRisks(age,sexM,sbp,bpTx,riskTc,hdlv,smoker,dm,bmi,riskStatin,egfr,hba1c,uacr);
+  const vAge = vascularAge(sexM, r.y10.ascvd, r.model);
+
+  ['sec2','sec3','sec5'].forEach(id=>document.getElementById(id).style.display='block');
+  document.getElementById('printBtn').style.display='flex';
+
+  // ── Section 2 ──
+  document.getElementById('secondaryNotice').style.display = ascvdHx ? 'block' : 'none';
+  const bcNotice = document.getElementById('statinBackCalcNotice');
+  if(backCalc){
+    bcNotice.style.display='block';
+    bcNotice.innerHTML = '현재 스타틴을 복용 중이므로, 검사 수치는 약으로 낮아진 상태입니다. 선택하신 강도를 기준으로 <b>약 복용 전 예상 LDL 약 '+Math.round(backCalc.preLdl)+' mg/dL, 총콜레스테롤 약 '+Math.round(backCalc.preTc)+' mg/dL</b>로 역산하여 아래 위험도·위험분류를 계산했습니다. 실제 반응은 개인차가 있어 참고용입니다.';
+  } else {
+    bcNotice.style.display='none';
+  }
+  document.getElementById('riskNumbers').style.opacity = ascvdHx ? '0.35' : '1';
+  document.getElementById('ascvdNum').textContent = r.y10.ascvd.toFixed(1)+'%';
+  document.getElementById('hfNum').textContent = r.y10.heart_failure.toFixed(1)+'%';
+  document.getElementById('totNum').textContent = r.y10.total_cvd.toFixed(1)+'%';
+  document.getElementById('ascvdBar').style.width = barWidthPct(r.y10.ascvd)+'%';
+  document.getElementById('ascvdBar').style.background = riskColor(r.y10.ascvd);
+  document.getElementById('hfBar').style.width = barWidthPct(r.y10.heart_failure)+'%';
+  document.getElementById('hfBar').style.background = riskColor(r.y10.heart_failure);
+  document.getElementById('totBar').style.width = barWidthPct(r.y10.total_cvd)+'%';
+  document.getElementById('totBar').style.background = riskColor(r.y10.total_cvd);
+  const show30yr = (age>=30 && age<=59); // 30년 누적 위험도는 30~59세에서만 임상적으로 의미 있음
+  const risk30El = document.getElementById('risk30sub');
+  if(show30yr){
+    risk30El.style.display = 'block';
+    risk30El.textContent = '30년 누적 위험도 (참고): 동맥경화성 '+r.y30.ascvd.toFixed(1)+'% · 전체 '+r.y30.total_cvd.toFixed(1)+'%';
+  } else {
+    risk30El.style.display = 'none';
+  }
+
+  const has30note = !ascvdHx && r.y10.ascvd<3 && r.y30.ascvd>=10 && age>=30 && age<=59;
+  document.getElementById('note30yr').style.display = has30note ? 'block' : 'none';
+  document.getElementById('ageWarn').style.display = (age<30||age>79) ? 'block' : 'none';
+
+  // 혈관 나이
+  document.getElementById('vascAgeNum').textContent = vAge+'세';
+  const diff = vAge - Math.round(age);
+  document.getElementById('vascAgeNum').style.color = diff>0 ? '#a32d2d' : (diff<0 ? '#185fa5' : '#1a1a18');
+  const diffEl = document.getElementById('vascAgeDiff');
+  if(diff>=2){ diffEl.textContent='실제보다 +'+diff+'세 (혈관 노화 ↑)'; diffEl.style.color='#a32d2d'; }
+  else if(diff<=-2){ diffEl.textContent='실제보다 '+diff+'세 (양호)'; diffEl.style.color='#185fa5'; }
+  else { diffEl.textContent='실제 나이와 비슷함'; diffEl.style.color='#888780'; }
+  document.getElementById('modelNote').style.display = (r.model==='full') ? 'block' : 'none';
+
+  // ── Section 3 ──
+  const cat = getCategory(ascvdHx,veryHigh,age,r.y10.ascvd,riskLdl,dm,smoker,bpTx,egfr);
+  const badge = document.getElementById('catBadge');
+  badge.style.background = cat.bg;
+  document.getElementById('catText').textContent = cat.cat;
+  document.getElementById('catText').style.color = cat.color;
+  document.getElementById('catSub').textContent = cat.sub;
+  document.getElementById('catSub').style.color = cat.color;
+
+  // ── Section 4 ──
+  const targetLdl = cat.target;
+
+  // ── Section 5 (다음 행동지침) ──
+  let recClass = cat.level==='hi'?'hi':(cat.level==='mo'?'mo':'lo');
+  let recHtml = '<div class="rb '+recClass+'"><div class="rb-title">권장 치료 강도: '+cat.intensity+'</div>';
+  recHtml += '<div class="rb-body">현재 LDL 콜레스테롤: <b>'+Math.round(ldl)+' mg/dL</b> · 목표 LDL 콜레스테롤: '+(targetLdl!=null?('<b>'+targetLdl+' mg/dL 미만</b>'):'개별 상담 필요');
+  if(targetLdl!=null) recHtml += (ldl<=targetLdl ? ' <span class="met">(달성 ✓)</span>' : ' <span class="unmet">(미달성)</span>');
+  recHtml += '</div></div>';
+  document.getElementById('recBox').innerHTML = recHtml;
+
+  let actions = [];
+  if(cat.level==='hi'){
+    actions.push('심장내과 또는 내분비내과·가정의학과에서 스타틴(콜레스테롤약) 치료 시작 여부를 상담하세요.');
+    actions.push('치료 시작 후 4~12주 뒤 지질 수치를 재검사해 목표 도달 여부를 확인하세요.');
+  } else if(cat.level==='mo'){
+    actions.push('생활습관 교정(식이, 운동, 금연)을 우선 시행하고, 스타틴 복용 여부는 의사와 함께 결정하세요.');
+    actions.push('3~6개월 후 콜레스테롤 재검사를 권장합니다.');
+  } else {
+    actions.push('현재는 약물치료보다 생활습관 관리(저염·저지방 식이, 주 150분 이상 유산소 운동, 금연)가 우선입니다.');
+    actions.push('1~2년마다 정기 건강검진에서 콜레스테롤·혈압을 재확인하세요.');
+  }
+  if(smoker) actions.push('금연은 심혈관 위험을 낮추는 가장 확실한 방법 중 하나입니다. 금연 클리닉 이용을 고려하세요.');
+  if(bpTx || sbp>=130) actions.push('혈압을 정기적으로 측정하고, 목표 혈압(대개 130/80 mmHg 미만)을 유지하도록 관리하세요.');
+  if(dm) actions.push('당화혈색소(HbA1c) 등 혈당 조절 상태를 담당 의사와 함께 정기적으로 확인하세요.');
+  if(egfr!=null && egfr>=15 && egfr<60 && age>=40 && age<=75) actions.push('만성신질환(eGFR '+egfr+')이 동반되어 있어, 2026 가이드라인 기준 LDL 수치·계산위험도와 무관하게 스타틴 치료가 권고됩니다. 신장내과와 함께 신장 기능을 정기적으로 확인하세요.');
+  if(egfr!=null && egfr>0 && egfr<15) actions.push('신장내과 진료를 통해 신장 기능 및 투석 여부를 정기적으로 확인하고, 스타틴 치료 지속/시작 여부를 개별적으로 상담하세요.');
+  actions.push('이 결과지를 진료 시 담당 의사에게 보여주시면 상담에 도움이 됩니다.');
+  document.getElementById('actionList').innerHTML = actions.map(a=>'<li>'+a+'</li>').join('');
+
+  // ── 프린트/PDF 요약 생성 ──
+  const todayStr = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  const yn = v => v ? '예' : '아니오';
+  let inputRows = '';
+  inputRows += '<tr><td class="k">나이</td><td>'+age+'세</td><td class="k">성별</td><td>'+(sexM?'남성':'여성')+'</td><td class="k">키 / 몸무게</td><td>'+height+'cm / '+weight+'kg (BMI '+bmi.toFixed(1)+')</td></tr>';
+  inputRows += '<tr><td class="k">수축기 혈압</td><td>'+sbp+' mmHg</td><td class="k">혈압약 복용</td><td>'+yn(bpTx)+'</td><td class="k">흡연</td><td>'+yn(smoker)+'</td></tr>';
+  inputRows += '<tr><td class="k">당뇨병</td><td>'+yn(dm)+'</td><td class="k">총콜레스테롤</td><td>'+Math.round(tc)+' mg/dL</td><td class="k">고밀도/저밀도콜레스테롤</td><td>'+Math.round(hdlv)+' / '+Math.round(ldl)+' mg/dL</td></tr>';
+  inputRows += '<tr><td class="k">사구체 여과율</td><td>'+(egfr!=null?egfr+' mL/min/1.73㎡':'—')+'</td><td class="k">당화혈색소</td><td>'+(hba1c!=null?hba1c+' %':'—')+'</td><td class="k">소변 알부민</td><td>'+(uacr!=null?uacr+' mg/g':'—')+'</td></tr>';
+
+  const catBg = document.getElementById('catBadge').style.background || '#f0efec';
+  const catColor = document.getElementById('catText').style.color || '#1a1a18';
+
+  const ascvdStyle = printRiskStyle(r.y10.ascvd);
+  const hfStyle = printRiskStyle(r.y10.heart_failure);
+  const totStyle = printRiskStyle(r.y10.total_cvd);
+  const ageDiff = vAge - Math.round(age);
+  const vAgeColor = ageDiff>0 ? '#a32d2d' : (ageDiff<0 ? '#185fa5' : '#444');
+
+  const printHtml = `
+    <div class="p-header"><h2>내 심혈관 위험도 평가 결과</h2><div class="p-date">평가일: ${todayStr}</div></div>
+    <div class="p-section">
+      <h3>1. 입력 정보</h3>
+      <table class="p-table">${inputRows}</table>
+    </div>
+    <div class="p-section">
+      <h3>2. 계산된 위험도 (향후 10년 내)</h3>
+      <div class="p-riskgrid">
+        <div class="p-rcell" style="background:${ascvdStyle.bg};border-color:${ascvdStyle.border}"><div class="lbl">동맥경화성 심혈관질환</div><div class="num" style="color:${ascvdStyle.text}">${r.y10.ascvd.toFixed(1)}%</div></div>
+        <div class="p-rcell" style="background:${hfStyle.bg};border-color:${hfStyle.border}"><div class="lbl">심부전</div><div class="num" style="color:${hfStyle.text}">${r.y10.heart_failure.toFixed(1)}%</div></div>
+        <div class="p-rcell" style="background:${totStyle.bg};border-color:${totStyle.border}"><div class="lbl">전체 심혈관질환</div><div class="num" style="color:${totStyle.text}">${r.y10.total_cvd.toFixed(1)}%</div></div>
+      </div>
+      <div class="p-sub">혈관 나이(참고): <span class="p-vage-emph" style="color:${vAgeColor}">${vAge}세 (${ageDiff>=0?'+':''}${ageDiff}세)</span>${show30yr ? ' &nbsp;|&nbsp; 30년 누적 위험도(참고): 동맥경화성 '+r.y30.ascvd.toFixed(1)+'% · 전체 '+r.y30.total_cvd.toFixed(1)+'%' : ''}</div>
+    </div>
+    <div class="p-section">
+      <h3>3. PREVENT 위험도 분류</h3>
+      <div class="p-badge" style="background:${catBg};color:${catColor}">${cat.cat}</div>
+      <div style="font-size:10.5px;color:#444">${cat.sub}</div>
+      <div style="font-size:9.5px;color:#666;margin-top:3px">저위험 &lt;3% · 경계위험 3~5% · 중간위험 5~10% · 고위험 ≥10%</div>
+    </div>
+    <div class="p-section">
+      <h3>4. 다음으로 해야 할 일</h3>
+      <div style="font-size:10.5px;font-weight:700;margin-bottom:3px">권장 치료 강도: ${cat.intensity} (목표 LDL ${targetLdl!=null?('<'+targetLdl+' mg/dL'):'개별 상담 필요'})</div>
+      <ul class="p-actions">${actions.map(a=>'<li>'+a+'</li>').join('')}</ul>
+    </div>
+    <div class="p-footer">본 도구는 ACC/AHA PREVENT(2023) 및 2026 ACC/AHA/Multisociety 지질 가이드라인의 공개된 계산식을 바탕으로 제작한 교육용 참고 자료이며, 공식 인증 도구가 아닙니다. 실제 진단·처방·치료 결정은 반드시 의료진과 상의하십시오.<br>제작: 경북대학교병원 내분비대사내과 김정국 (<a href="mailto:jugkim@knu.ac.kr" style="color:inherit">jugkim@knu.ac.kr</a>)</div>
+  `;
+  document.getElementById('printSummary').innerHTML = printHtml;
+
+  document.getElementById('sec2').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function printReport(){
+  const content = document.getElementById('printSummary').innerHTML;
+  if(!content || content.trim()===''){
+    alert('먼저 "내 위험도 계산하기" 버튼으로 계산을 완료해 주세요.');
+    return;
+  }
+  const printCss = `
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;color:#111;margin:0;padding:14mm}
+    @page{size:A4;margin:12mm 14mm}
+    .p-header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #1a1a18;padding-bottom:6px;margin-bottom:10px}
+    .p-header h2{font-size:17px;font-weight:800;margin:0}
+    .p-date{font-size:10.5px;color:#555}
+    .p-section{margin-bottom:9px;page-break-inside:avoid}
+    .p-section h3{font-size:12.5px;font-weight:800;background:#f0efec;padding:4px 8px;margin-bottom:5px;border-left:3px solid #185fa5}
+    .p-table{width:100%;border-collapse:collapse;font-size:10.5px}
+    .p-table td{padding:3px 6px;border:1px solid #ddd}
+    .p-table td.k{background:#f7f6f4;font-weight:700;width:16%;color:#444}
+    .p-riskgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+    .p-rcell{border:1px solid #ddd;border-radius:6px;padding:6px 4px;text-align:center}
+    .p-rcell .lbl{font-size:9.5px;color:#666;font-weight:700}
+    .p-rcell .num{font-size:17px;font-weight:800;margin-top:2px}
+    .p-sub{font-size:11px;color:#444;text-align:left;margin-bottom:4px}
+    .p-vage-emph{font-size:13px;font-weight:800;color:#185fa5}
+    .p-badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:800;margin-bottom:3px}
+    .p-actions{margin:0;padding-left:16px;font-size:10.5px;line-height:1.55}
+    .p-actions li{margin-bottom:2px}
+    .p-footer{margin-top:8px;padding-top:6px;border-top:1px solid #ccc;font-size:8.5px;color:#777;line-height:1.5;text-align:left}
+  `;
+  const doc = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>심혈관 위험도 평가 결과</title><style>${printCss}</style></head><body>${content}</body></html>`;
+
+  // 새 창(또는 새 탭)을 열어 그 안에서 인쇄 — 미리보기 iframe 등 보안 제한이 있는 환경에서도 동작하도록 함
+  let win = null;
+  try{ win = window.open('', '_blank'); }catch(e){ win = null; }
+
+  if(win){
+    win.document.open();
+    win.document.write(doc);
+    win.document.close();
+    win.focus();
+    setTimeout(()=>{ try{ win.print(); }catch(e){} }, 300);
+  } else {
+    // 팝업이 차단된 경우: 현재 창에서 바로 인쇄 시도
+    try{ window.print(); }
+    catch(e){ alert('인쇄 창을 열 수 없습니다. 팝업 차단을 해제한 뒤 다시 시도하거나, 이 페이지를 Safari/Chrome에서 직접 열어 다시 시도해 주세요.'); }
+  }
+}
+
+function lipidRow(label,val,target){
+  let statusHtml = '<span style="color:#a8a6a0">—</span>';
+  let targetTxt = '—';
+  if(target!=null){
+    targetTxt = '<'+target+' mg/dL';
+    if(val<=target) statusHtml = '<span class="met">달성 ✓</span>';
+    else statusHtml = '<span class="unmet">미달성</span>';
+  }
+  return '<tr><td>'+label+'</td><td><b>'+Math.round(val)+'</b> mg/dL</td><td>'+targetTxt+'</td><td>'+statusHtml+'</td></tr>';
+}
+</script>
+</body>
+</html>
