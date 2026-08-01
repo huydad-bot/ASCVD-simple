@@ -453,7 +453,7 @@ function getCategory(ascvdHx,veryHigh,age,risk,ldl,dm,smoker,bpTx,egfr){
   const rlv = riskLevelLabel(risk);
   if(ldl>=190){
     const strong = dm||risk>=10||smoker||bpTx;
-    return {cat:'중증 고콜레스테롤혈증 (LDL≥190)', sub:rlv+'에 속하나, LDL≥190 mg/dL(중증 고콜레스테롤혈증, 가족성 고콜레스테롤혈증 감별 필요)이므로, 위험도와 상관 없이 스타틴 사용이 필요함', color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target: strong?70:100, level:'hi'};
+    return {cat:'중증 고콜레스테롤혈증 (LDL≥190)', sub:'계산된 동맥경화성 심혈관질환 위험은 '+risk.toFixed(1)+'%로서 '+rlv+'군에 속하나, LDL≥190 mg/dL(중증 고콜레스테롤혈증, 가족성 고콜레스테롤혈증 감별 필요)이므로, 계산된 위험도와 상관 없이 고지혈증 약물치료가 필요합니다', mandatory:true, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target: strong?70:100, level:'hi'};
   }
   if(age<30){
     if(ldl>=160) return {cat:'30세 미만 — 위험 인자 동반', sub:'LDL ≥160', color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴 고려', target:100, level:'mo'};
@@ -471,16 +471,16 @@ function getCategory(ascvdHx,veryHigh,age,risk,ldl,dm,smoker,bpTx,egfr){
   if(hasCkd){
     const condLabel = dm ? '당뇨병 및 만성신질환(CKD 3~4기)' : '만성신질환(CKD 3~4기)';
     const catLabel = dm ? '당뇨병 + 만성신질환(CKD 3~4기)' : '만성신질환(CKD 3~4기)';
-    const sub = rlv+'에 속하나, '+condLabel+' 동반 상태이므로, 위험도와 상관 없이 스타틴 사용이 필요함';
+    const sub = '계산된 동맥경화성 심혈관질환 위험은 '+risk.toFixed(1)+'%로서 '+rlv+'군에 속하나, '+condLabel+' 동반 상태이므로, 계산된 위험도와 상관 없이 고지혈증 약물치료가 필요합니다';
     if(dm || risk>=10){
-      return {cat:catLabel, sub, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:70, level:'hi'};
+      return {cat:catLabel, sub, mandatory:true, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:70, level:'hi'};
     }
-    return {cat:catLabel, sub, color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴 (± 에제티미브)', target:100, level:'mo'};
+    return {cat:catLabel, sub, mandatory:true, color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴 (± 에제티미브)', target:100, level:'mo'};
   }
   if(dm){
-    const sub = rlv+'에 속하나, 당뇨병 동반 상태이므로, 위험도와 상관 없이 스타틴 사용이 필요함';
-    if(risk>=10) return {cat:'당뇨병', sub, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:70, level:'hi'};
-    return {cat:'당뇨병', sub, color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴', target:100, level:'mo'};
+    const sub = '계산된 동맥경화성 심혈관질환 위험은 '+risk.toFixed(1)+'%로서 '+rlv+'군에 속하나, 당뇨병 동반 상태이므로, 계산된 위험도와 상관 없이 고지혈증 약물치료가 필요합니다';
+    if(risk>=10) return {cat:'당뇨병', sub, mandatory:true, color:'#a32d2d', bg:'#fcebeb', intensity:'고강도 스타틴', target:70, level:'hi'};
+    return {cat:'당뇨병', sub, mandatory:true, color:'#ef9f27', bg:'#fdf3e0', intensity:'중등강도 스타틴', target:100, level:'mo'};
   }
   if(risk<3) return {cat:'저위험 (<3%)', sub:'PREVENT-ASCVD 10년 위험도', color:'#639922', bg:'#eef5e2', intensity:'생활습관 교정', target:130, level:'lo'};
   if(risk<5) return {cat:'경계위험 (3~5%)', sub:'PREVENT-ASCVD 10년 위험도', color:'#639922', bg:'#eef5e2', intensity:'생활습관 교정, 필요시 스타틴 상담', target:130, level:'lo'};
@@ -599,8 +599,17 @@ function calcAll(){
   badge.style.background = cat.bg;
   document.getElementById('catText').textContent = cat.cat;
   document.getElementById('catText').style.color = cat.color;
-  document.getElementById('catSub').textContent = cat.sub;
-  document.getElementById('catSub').style.color = cat.color;
+  const catSubEl = document.getElementById('catSub');
+  catSubEl.textContent = cat.sub;
+  if(cat.mandatory){
+    catSubEl.style.color = '#185fa5';
+    catSubEl.style.fontWeight = '700';
+    catSubEl.style.opacity = '1';
+  } else {
+    catSubEl.style.color = cat.color;
+    catSubEl.style.fontWeight = '';
+    catSubEl.style.opacity = '';
+  }
 
   // ── Section 4 ──
   const targetLdl = cat.target;
@@ -613,12 +622,34 @@ function calcAll(){
   recHtml += '</div></div>';
   document.getElementById('recBox').innerHTML = recHtml;
 
+  // 위험도 무관(계산위험도와 상관없이) 스타틴 적응증 여부 — getCategory()가 명시하는 mandatory 플래그로 판별
+  const isMandatoryStatin = !!cat.mandatory;
+
   let actions = [];
+  // 위험도 무관 스타틴 적응증이면, 그 사유를 가장 먼저 안내
+  if(isMandatoryStatin){
+    const hasCkd35 = (egfr!=null && egfr>=15 && egfr<60 && age>=40 && age<=75);
+    let reason;
+    if(hasCkd35){
+      reason = '만성신질환(eGFR '+egfr+')이 동반되어 있어, 2026 가이드라인 기준 LDL 수치·계산위험도와 무관하게 스타틴 치료가 권고됩니다. 신장내과와 함께 신장 기능을 정기적으로 확인하세요.';
+    } else if(ldl>=190){
+      reason = '중증 고콜레스테롤혈증(LDL '+Math.round(ldl)+' mg/dL, ≥190 mg/dL)에 해당하여, 계산된 위험도와 무관하게 스타틴 치료가 필요합니다. 가족성 고콜레스테롤혈증 감별을 위해 전문의 상담을 고려하세요.';
+    } else if(dm){
+      reason = '당뇨병이 동반되어 있어, 계산된 위험도와 무관하게 스타틴 치료가 권고됩니다.';
+    } else {
+      reason = cat.sub;
+    }
+    actions.push(reason);
+  }
   if(cat.level==='hi'){
     actions.push('심장내과 또는 내분비내과·가정의학과에서 스타틴(콜레스테롤약) 치료 시작 여부를 상담하세요.');
     actions.push('치료 시작 후 4~12주 뒤 지질 수치를 재검사해 목표 도달 여부를 확인하세요.');
   } else if(cat.level==='mo'){
-    actions.push('생활습관 교정(식이, 운동, 금연)을 우선 시행하고, 스타틴 복용 여부는 의사와 함께 결정하세요.');
+    if(isMandatoryStatin){
+      actions.push('생활습관 교정(식이, 운동, 금연)도 필요합니다.');
+    } else {
+      actions.push('생활습관 교정(식이, 운동, 금연)을 우선 시행하고, 스타틴 복용 여부는 의사와 함께 결정하세요.');
+    }
     actions.push('3~6개월 후 콜레스테롤 재검사를 권장합니다.');
   } else {
     actions.push('현재는 약물치료보다 생활습관 관리(저염·저지방 식이, 주 150분 이상 유산소 운동, 금연)가 우선입니다.');
@@ -627,7 +658,6 @@ function calcAll(){
   if(smoker) actions.push('금연은 심혈관 위험을 낮추는 가장 확실한 방법 중 하나입니다. 금연 클리닉 이용을 고려하세요.');
   if(bpTx || sbp>=130) actions.push('혈압을 정기적으로 측정하고, 목표 혈압(대개 130/80 mmHg 미만)을 유지하도록 관리하세요.');
   if(dm) actions.push('당화혈색소(HbA1c) 등 혈당 조절 상태를 담당 의사와 함께 정기적으로 확인하세요.');
-  if(egfr!=null && egfr>=15 && egfr<60 && age>=40 && age<=75) actions.push('만성신질환(eGFR '+egfr+')이 동반되어 있어, 2026 가이드라인 기준 LDL 수치·계산위험도와 무관하게 스타틴 치료가 권고됩니다. 신장내과와 함께 신장 기능을 정기적으로 확인하세요.');
   if(egfr!=null && egfr>0 && egfr<15) actions.push('신장내과 진료를 통해 신장 기능 및 투석 여부를 정기적으로 확인하고, 스타틴 치료 지속/시작 여부를 개별적으로 상담하세요.');
   actions.push('이 결과지를 진료 시 담당 의사에게 보여주시면 상담에 도움이 됩니다.');
   document.getElementById('actionList').innerHTML = actions.map(a=>'<li>'+a+'</li>').join('');
