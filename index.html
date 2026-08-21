@@ -196,7 +196,7 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
 
   <div class="divider" style="height:1px;background:#e2e0db;margin:14px 0"></div>
 
-  <div class="row3">
+  <div class="row4">
     <div class="field">
       <label class="fl">총콜레스테롤(mg/dL)</label>
       <input type="number" id="tc" placeholder="200">
@@ -208,6 +208,10 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
     <div class="field">
       <label class="fl">저밀도콜레스테롤(mg/dL)</label>
       <input type="number" id="ldl" placeholder="120">
+    </div>
+    <div class="field">
+      <label class="fl">중성지방(mg/dL)</label>
+      <input type="number" id="tg" placeholder="150">
     </div>
   </div>
 
@@ -578,6 +582,8 @@ function calcAll(){
   const tc=parseFloat(document.getElementById('tc').value);
   const hdlv=parseFloat(document.getElementById('hdl').value);
   let ldl=parseFloat(document.getElementById('ldl').value);
+  const tgRaw=parseFloat(document.getElementById('tg').value);
+  const tg=(!isNaN(tgRaw)&&tgRaw>0)?tgRaw:null; // 선택 입력 — 현재 위험도 계산에는 미반영(추후 확장용)
   const sexM = document.querySelector('input[name=sex]:checked').value==='M';
   const bpTx = document.querySelector('input[name=bpTx]:checked').value==='1'?1:0;
   const smoker = document.querySelector('input[name=smoker]:checked').value==='1'?1:0;
