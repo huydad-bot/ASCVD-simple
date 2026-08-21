@@ -215,7 +215,7 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
   <div class="hint" style="margin:-6px 0 10px">* 입력값 단위 (mg/dL)</div>
 
   <div class="divider" style="height:1px;background:#e2e0db;margin:14px 0"></div>
-  <div style="font-size:12.5px;font-weight:700;color:#4a4944;margin-bottom:2px">추가 정보 (입력하면 더 정확해집니다)</div>
+  <div class="sec-title"><span class="sec-num">2</span>추가 정보 (입력하면 더 정확해집니다)</div>
   <div class="hint" style="margin-bottom:10px">사구체 여과율(eGFR)·당화혈색소·요알부민은 각각 단독으로 입력해도 PREVENT의 해당 확장 모델(전용 계수)이 적용되어 위험도 정확도를 높입니다. 모르면 비워두어도 계산됩니다.</div>
   <div class="row3 info-row">
     <div class="field">
@@ -237,7 +237,7 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
 
 <!-- SECTION 2: baseline risk -->
 <div class="card rescard" id="sec2">
-  <div class="sec-title"><span class="sec-num">2</span>치료 전(현재 기준) 위험도</div>
+  <div class="sec-title"><span class="sec-num">3</span>치료 전(현재 기준) 위험도</div>
   <div class="sec-desc">앞으로 10년 동안 심장병·뇌졸중이 생길 확률</div>
   <div id="secondaryNotice" style="display:none" class="nb warn">이미 심장병·뇌졸중 병력이 있으신 경우, PREVENT 위험도 계산식은 처음 발생을 예측하는 용도라 적용되지 않습니다. 대신 재발 방지를 위한 2차 예방 치료가 필요합니다 (아래 3·5번 참고).</div>
   <div id="statinBackCalcNotice" style="display:none" class="nb info"></div>
@@ -282,7 +282,7 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
 
 <!-- SECTION 3: risk classification -->
 <div class="card rescard" id="sec3">
-  <div class="sec-title"><span class="sec-num">3</span>PREVENT 위험도 분류</div>
+  <div class="sec-title"><span class="sec-num">4</span>PREVENT 위험도 분류</div>
   <div class="sec-desc">ACC/AHA 기준에 따른 나의 위험 단계</div>
   <div class="badge-wrap" id="catBadge">
     <div>
@@ -297,7 +297,7 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
 
 <!-- SECTION 4: next steps -->
 <div class="card rescard" id="sec5">
-  <div class="sec-title"><span class="sec-num">4</span>다음으로 해야 할 일</div>
+  <div class="sec-title"><span class="sec-num">5</span>다음으로 해야 할 일</div>
   <div class="sec-desc">위험도 단계에 따른 일반적인 권장 사항 (개인마다 다를 수 있음)</div>
   <div id="recBox"></div>
   <ul class="checklist" id="actionList"></ul>
@@ -850,6 +850,13 @@ function lipidRow(label,val,target){
   }
   return '<tr><td>'+label+'</td><td><b>'+Math.round(val)+'</b> mg/dL</td><td>'+targetTxt+'</td><td>'+statusHtml+'</td></tr>';
 }
+
+// 섹션 번호 자동 재조정: .sec-num이 붙은 항목을 문서 순서대로 1,2,3...으로 자동 매김.
+// 섹션을 추가/삭제해도 이 부분을 수정할 필요 없이 번호가 자동으로 맞춰짐.
+document.querySelectorAll('.sec-num').forEach(function(el, idx){
+  el.textContent = (idx+1);
+});
+
 </script>
 </body>
 </html>
