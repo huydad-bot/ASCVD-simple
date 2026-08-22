@@ -167,7 +167,7 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
 
   <div class="row4">
     <div class="field">
-      <label class="fl">수축기 혈압(mmHg)</label>
+      <label class="fl">수축기 혈압</label>
       <input type="number" id="sbp" placeholder="">
     </div>
     <div class="field">
@@ -219,16 +219,19 @@ input[type=number]:focus{border-color:#185fa5;background:#fff;box-shadow:0 0 0 3
   <div class="hint" style="margin-bottom:10px">사구체 여과율(eGFR)·당화혈색소·요알부민은 각각 단독으로 입력해도 PREVENT의 해당 확장 모델(전용 계수)이 적용되어 위험도 정확도를 높입니다. 모르면 비워두어도 계산됩니다.</div>
   <div class="row3 info-row">
     <div class="field">
-      <label class="fl">사구체 여과율(mL/min/1.73㎡)</label>
+      <label class="fl">사구체 여과율</label>
       <input type="number" id="egfr" placeholder="모르면 공란">
+      <div class="hint" style="margin:2px 0 0">*mL/min/1.73㎡</div>
     </div>
     <div class="field">
       <label class="fl">당화혈색소(%)</label>
       <input type="number" step="0.1" id="hba1c" placeholder="모르면 공란">
+      <div class="hint" style="margin:2px 0 0;visibility:hidden">.</div>
     </div>
     <div class="field">
       <label class="fl">소변 알부민(mg/g)</label>
       <input type="number" id="uacr" placeholder="모르면 공란">
+      <div class="hint" style="margin:2px 0 0;visibility:hidden">.</div>
     </div>
   </div>
 
